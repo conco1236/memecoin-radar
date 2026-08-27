@@ -22,6 +22,7 @@ export const appRouter = router({
     discover: publicProcedure.input(z.object({
       chain: z.string().optional(), search: z.string().max(80).optional(),
       sort: z.enum(["age", "liquidity", "volume", "momentum", "potential", "risk"]).optional(),
+      minVolume24h: z.number().min(0).optional(), maxVolume24h: z.number().min(0).optional(),
       limit: z.number().int().min(1).max(24).optional(),
     }).optional()).query(({ input }) => discoverTokens(input ?? {})),
   }),

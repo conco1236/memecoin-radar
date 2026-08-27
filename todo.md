@@ -28,3 +28,6 @@
 - [x] Diagnose Vercel deployment failure from deployment logs and GitHub repository state
 - [x] Fix Vercel entrypoint/build/runtime configuration and verify production behavior
 - [x] Push deployment fix to GitHub and document redeploy steps
+- [x] Add 24h trading-volume minimum/maximum filter to discovery controls
+- [x] Add loading skeleton rows while newly created memecoins are loading
+- [x] Add a data-backed mini price sparkline for each listed memecoin

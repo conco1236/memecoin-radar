@@ -25,6 +25,7 @@ export type RadarToken = {
   freshness: "fresh" | "aging" | "stale";
   dataTimestamp: number;
   profileLinks: string[];
+  sparkline: number[];
 };
 
 type DexProfile = { chainId?: string; tokenAddress?: string; url?: string; links?: { label?: string; url?: string }[] };
@@ -36,6 +37,8 @@ type DexPair = {
 };
 
 const API = "https://api.dexscreener.com";
+const GECKO_API = "https://api.geckoterminal.com/api/v2";
+const geckoNetworks: Record<string, string> = { solana: "solana", ethereum: "eth", bsc: "bsc", base: "base", arbitrum: "arbitrum", polygon_pos: "polygon_pos" };
 const chainNames: Record<string, string> = { solana: "Solana", ethereum: "Ethereum", bsc: "BNB Chain", base: "Base", arbitrum: "Arbitrum", polygon: "Polygon" };
 
 function numberOr(value: unknown, fallback = 0) {
@@ -79,7 +82,16 @@ async function getJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export async function discoverTokens(args: { chain?: string; search?: string; sort?: SortKey; limit?: number }): Promise<{ tokens: RadarToken[]; fetchedAt: number; source: string; warning?: string }> {
+async function getSparkline(chainId: string, pairAddress: string): Promise<number[]> {
+  const network = geckoNetworks[chainId];
+  if (!network || !pairAddress) return [];
+  try {
+    const data = await getJson<{ data?: { attributes?: { ohlcv_list?: number[][] } } }>(`${GECKO_API}/networks/${network}/pools/${pairAddress}/ohlcv/hour?aggregate=1&limit=24`);
+    return (data.data?.attributes?.ohlcv_list ?? []).map(candle => Number(candle[4])).filter(Number.isFinite).reverse();
+  } catch { return []; }
+}
+
+export async function discoverTokens(args: { chain?: string; search?: string; sort?: SortKey; minVolume24h?: number; maxVolume24h?: number; limit?: number }): Promise<{ tokens: RadarToken[]; fetchedAt: number; source: string; warning?: string }> {
   const fetchedAt = Date.now();
   try {
     const profiles = await getJson<DexProfile[]>(`${API}/token-profiles/latest/v1`);
@@ -95,18 +107,21 @@ export async function discoverTokens(args: { chain?: string; search?: string; so
         const freshness = ageMinutes < 15 ? "fresh" : ageMinutes < 60 ? "aging" : "stale";
         const chainId = pair.chainId;
         if (!chainId) return null;
+        const sparkline = await getSparkline(chainId, pair.pairAddress ?? "");
         const token: RadarToken = {
           id: `${chainId}:${pair.pairAddress}`,
           chainId, chainName: chainNames[chainId] ?? chainId, dexId: pair.dexId ?? "DEX", pairAddress: pair.pairAddress ?? "", tokenAddress: profile.tokenAddress,
           symbol: pair.baseToken.symbol ?? "UNKNOWN", name: pair.baseToken.name ?? "Unnamed token", url: pair.url ?? profile.url ?? "https://dexscreener.com",
           createdAt: pair.pairCreatedAt, ageMinutes, priceUsd: pair.priceUsd ? numberOr(pair.priceUsd, NaN) : null, liquidityUsd: numberOr(pair.liquidity?.usd), volume24h: numberOr(pair.volume?.h24), priceChange5m: numberOr(pair.priceChange?.m5), priceChange24h: numberOr(pair.priceChange?.h24), txns24h: numberOr(pair.txns?.h24?.buys) + numberOr(pair.txns?.h24?.sells),
-          potentialScore: scored.potential, riskScore: scored.risk + (freshness === "stale" ? 10 : 0), potentialReasons: scored.potentialReasons, riskReasons: freshness === "stale" ? [...scored.riskReasons, "Dữ liệu đã cũ so với thời điểm tải dashboard"] : scored.riskReasons, freshness, dataTimestamp: fetchedAt, profileLinks: (profile.links ?? []).map(l => l.url).filter((url): url is string => Boolean(url)),
+          potentialScore: scored.potential, riskScore: scored.risk + (freshness === "stale" ? 10 : 0), potentialReasons: scored.potentialReasons, riskReasons: freshness === "stale" ? [...scored.riskReasons, "Dữ liệu đã cũ so với thời điểm tải dashboard"] : scored.riskReasons, freshness, dataTimestamp: fetchedAt, sparkline, profileLinks: (profile.links ?? []).map(l => l.url).filter((url): url is string => Boolean(url)),
         };
         return token;
       } catch { return null; }
     }));
     let tokens = results.filter((token): token is RadarToken => Boolean(token));
     if (args.search) { const q = args.search.toLowerCase(); tokens = tokens.filter(t => `${t.symbol} ${t.name} ${t.chainName}`.toLowerCase().includes(q)); }
+    if (args.minVolume24h !== undefined) tokens = tokens.filter(t => t.volume24h >= args.minVolume24h!);
+    if (args.maxVolume24h !== undefined) tokens = tokens.filter(t => t.volume24h <= args.maxVolume24h!);
     const key = args.sort ?? "potential";
     tokens.sort((a, b) => key === "age" ? a.ageMinutes - b.ageMinutes : key === "liquidity" ? b.liquidityUsd - a.liquidityUsd : key === "volume" ? b.volume24h - a.volume24h : key === "momentum" ? b.priceChange24h - a.priceChange24h : key === "risk" ? b.riskScore - a.riskScore : b.potentialScore - a.potentialScore);
     return { tokens: tokens.slice(0, args.limit ?? 12), fetchedAt, source: "DEX Screener public API" };
