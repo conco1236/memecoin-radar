@@ -1,33 +1,55 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect, useMemo, useState } from "react";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ExternalLink, RefreshCw, Search, Star, ShieldAlert, Activity, ArrowUpRight, Clock3, SlidersHorizontal } from "lucide-react";
+import type { RadarToken } from "../../../server/marketData";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
-export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+const money = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+const price = new Intl.NumberFormat("en-US", { maximumSignificantDigits: 5 });
+const ageLabel = (minutes: number) => minutes < 60 ? `${minutes}m` : minutes < 1440 ? `${Math.floor(minutes / 60)}h` : `${Math.floor(minutes / 1440)}d`;
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
-  );
+function scoreTone(score: number, inverse = false) {
+  const positive = inverse ? score < 35 : score >= 65;
+  return positive ? "text-emerald-700 bg-emerald-50 border-emerald-200" : score >= 45 ? "text-amber-700 bg-amber-50 border-amber-200" : "text-rose-700 bg-rose-50 border-rose-200";
 }
+
+export default function Home() {
+  const [search, setSearch] = useState("");
+  const [chain, setChain] = useState("all");
+  const [sort, setSort] = useState<"potential" | "age" | "liquidity" | "volume" | "momentum" | "risk">("potential");
+  const [selected, setSelected] = useState<RadarToken | null>(null);
+  const [watchlist, setWatchlist] = useState<string[]>(() => JSON.parse(localStorage.getItem("memecoin-radar-watchlist") ?? "[]"));
+  const [threshold, setThreshold] = useState(() => Number(localStorage.getItem("memecoin-radar-threshold") ?? 70));
+  const input = useMemo(() => ({ search: search || undefined, chain, sort, limit: 18 }), [search, chain, sort]);
+  const query = trpc.tokens.discover.useQuery(input, { refetchInterval: 120000 });
+  const tokens = query.data?.tokens ?? [];
+  const thresholdHits = tokens.filter(t => t.potentialScore >= threshold).length;
+  const [alertMessage, setAlertMessage] = useState("");
+  useEffect(() => {
+    const hit = tokens.find(t => t.potentialScore >= threshold || (watchlist.includes(t.id) && t.riskScore >= 75));
+    if (hit) setAlertMessage(hit.potentialScore >= threshold ? `${hit.symbol} crossed potential threshold (${hit.potentialScore})` : `${hit.symbol} received a high-risk warning (${hit.riskScore})`);
+  }, [tokens, threshold, watchlist]);
+
+  const toggleWatch = (id: string) => setWatchlist(current => { const next = current.includes(id) ? current.filter(x => x !== id) : [...current, id]; localStorage.setItem("memecoin-radar-watchlist", JSON.stringify(next)); return next; });
+  const updateThreshold = (value: number) => { const next = Math.max(0, Math.min(100, value)); setThreshold(next); localStorage.setItem("memecoin-radar-threshold", String(next)); };
+
+  return <div className="min-h-screen bg-[#f8fafb] text-slate-950">
+    <header className="border-b border-slate-900/10 bg-white/85 backdrop-blur sticky top-0 z-20"><div className="max-w-[1440px] mx-auto px-5 lg:px-10 h-20 flex items-center justify-between gap-6"><div className="flex items-center gap-4"><div className="size-11 border-2 border-slate-950 grid place-items-center bg-cyan-100"><span className="font-mono font-bold">MR</span></div><div><p className="font-mono text-[10px] tracking-[0.24em] uppercase text-slate-500">Research terminal / 01</p><h1 className="text-xl font-black tracking-tight">MEMECOIN RADAR</h1></div></div><div className="flex items-center gap-3"><div className="hidden md:flex items-center gap-2 font-mono text-xs text-slate-500"><span className="size-2 bg-emerald-500 rounded-full animate-pulse" />PUBLIC DATA STREAM</div><Button variant="outline" onClick={() => query.refetch()} disabled={query.isFetching} className="font-mono text-xs"><RefreshCw className={query.isFetching ? "animate-spin mr-2 size-4" : "mr-2 size-4"}/> Refresh</Button></div></div></header>
+    <main className="max-w-[1440px] mx-auto px-5 lg:px-10 py-8 relative"><div className="blueprint-crosshair one"/><div className="blueprint-crosshair two"/>
+      <section className="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-end mb-10"><div><p className="font-mono text-xs text-pink-600 mb-4">// NEW PAIR DISCOVERY PROTOCOL</p><h2 className="text-5xl md:text-7xl font-black leading-[.9] tracking-[-.06em] max-w-3xl">Find signal.<br/><span className="text-cyan-500">Expose risk.</span></h2></div><div className="border-l-2 border-slate-950 pl-5 pb-1 max-w-md"><p className="font-mono text-sm leading-6 text-slate-600">A transparent research surface for newly created memecoin pairs. No execution. No hidden scores. Every signal has a visible reason.</p><p className="font-mono text-[10px] uppercase tracking-widest text-slate-400 mt-4">Last scan: {query.data?.fetchedAt ? new Date(query.data.fetchedAt).toLocaleTimeString() : "waiting"}</p></div></section>
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8"><Stat label="Pairs indexed" value={String(tokens.length).padStart(2, "0")} accent="cyan"/><Stat label="Threshold hits" value={String(thresholdHits).padStart(2, "0")} accent="pink"/><Stat label="Watchlist" value={String(watchlist.length).padStart(2, "0")} accent="lime"/><Stat label="Score threshold" value={`${threshold}`} accent="slate"/></section>
+      {query.data?.warning && <div className="mb-5 border border-amber-300 bg-amber-50 p-4 font-mono text-xs text-amber-900">DATA NOTICE: {query.data.warning}. The dashboard intentionally shows an empty state instead of fabricated data.</div>}
+      {alertMessage && <div className="mb-5 flex items-center justify-between gap-3 border border-pink-300 bg-pink-50 p-4 font-mono text-xs text-pink-900"><span>ALERT / {alertMessage}</span><button onClick={() => setAlertMessage("")} className="text-pink-600">DISMISS ×</button></div>}
+      <section className="flex flex-col xl:flex-row gap-3 mb-5"><div className="relative flex-1"><Search className="absolute left-3 top-3 size-4 text-slate-400"/><Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search symbol, token name, or chain..." className="pl-9 bg-white border-slate-300 font-mono text-xs h-10"/></div><select value={chain} onChange={e => setChain(e.target.value)} className="h-10 border border-slate-300 bg-white px-3 font-mono text-xs"><option value="all">ALL CHAINS</option><option value="solana">SOLANA</option><option value="ethereum">ETHEREUM</option><option value="base">BASE</option><option value="bsc">BNB CHAIN</option></select><select value={sort} onChange={e => setSort(e.target.value as typeof sort)} className="h-10 border border-slate-300 bg-white px-3 font-mono text-xs"><option value="potential">SORT: POTENTIAL</option><option value="age">SORT: NEWEST</option><option value="liquidity">SORT: LIQUIDITY</option><option value="volume">SORT: VOLUME</option><option value="momentum">SORT: MOMENTUM</option><option value="risk">SORT: RISK</option></select><div className="flex items-center gap-2 border border-slate-300 bg-white px-3 h-10"><SlidersHorizontal className="size-4"/><span className="font-mono text-[10px]">ALERT ≥</span><input type="number" min="0" max="100" value={threshold} onChange={e => updateThreshold(Number(e.target.value))} className="w-12 font-mono text-xs outline-none"/></div></section>
+      <div className="grid xl:grid-cols-[1fr_380px] gap-5 items-start"><Card className="rounded-none border-slate-300 shadow-[5px_5px_0_#d9f6fa] overflow-hidden"><CardHeader className="bg-white border-b border-slate-200 py-4"><div className="flex justify-between items-center"><CardTitle className="font-mono text-xs tracking-widest">LATEST PAIRS / {query.isFetching ? "SCANNING" : "READY"}</CardTitle><span className="font-mono text-[10px] text-slate-400">SOURCE: {query.data?.source ?? "—"}</span></div></CardHeader><CardContent className="p-0 overflow-x-auto"><table className="w-full text-left min-w-[900px]"><thead className="bg-slate-50 font-mono text-[10px] uppercase tracking-wider text-slate-500"><tr>{["Token / chain","Age","Liquidity","Vol 24h","Momentum","Potential","Risk",""].map(h => <th key={h} className="px-4 py-3 font-normal">{h}</th>)}</tr></thead><tbody>{tokens.map(token => <tr key={token.id} onClick={() => setSelected(token)} className="border-t border-slate-200 hover:bg-cyan-50/50 cursor-pointer transition-colors"><td className="px-4 py-4"><div className="flex items-center gap-3"><button onClick={e => { e.stopPropagation(); toggleWatch(token.id); }} aria-label="Toggle watchlist"><Star className={watchlist.includes(token.id) ? "size-4 fill-pink-400 text-pink-500" : "size-4 text-slate-300"}/></button><div><div className="font-bold">{token.symbol}</div><div className="font-mono text-[10px] text-slate-400">{token.chainName} / {token.dexId}</div></div></div></td><td className="px-4 font-mono text-xs">{ageLabel(token.ageMinutes)}</td><td className="px-4 font-mono text-xs">${money.format(token.liquidityUsd)}</td><td className="px-4 font-mono text-xs">${money.format(token.volume24h)}</td><td className={`px-4 font-mono text-xs ${token.priceChange24h >= 0 ? "text-emerald-700" : "text-rose-700"}`}>{token.priceChange24h >= 0 ? "+" : ""}{token.priceChange24h.toFixed(1)}%</td><td className="px-4"><span className={`inline-flex border px-2 py-1 font-mono text-xs ${scoreTone(token.potentialScore)}`}>{token.potentialScore}</span></td><td className="px-4"><span className={`inline-flex border px-2 py-1 font-mono text-xs ${scoreTone(token.riskScore, true)}`}>{token.riskScore}</span></td><td className="px-4"><ArrowUpRight className="size-4 text-slate-400"/></td></tr>)}{!query.isFetching && tokens.length === 0 && <tr><td colSpan={8} className="p-16 text-center"><div className="font-mono text-sm">NO QUALIFYING PAIRS</div><p className="font-mono text-xs text-slate-400 mt-2">Try clearing filters or refresh the public data stream.</p></td></tr>}</tbody></table></CardContent></Card>
+        <aside className="space-y-5">{selected ? <Detail token={selected} onClose={() => setSelected(null)} /> : <Card className="rounded-none border-slate-300 bg-[#fffdf5]"><CardContent className="p-6"><p className="font-mono text-[10px] tracking-widest text-pink-600">SELECT A PAIR</p><h3 className="text-2xl font-black mt-3">Inspect the evidence.</h3><p className="font-mono text-xs leading-5 text-slate-500 mt-3">Open any row to see score construction, risk reasons, market metrics, and external verification links.</p><div className="mt-8 h-32 border border-dashed border-slate-300 grid place-items-center"><Activity className="size-8 text-cyan-500"/></div></CardContent></Card>}<Card className="rounded-none border-slate-300"><CardContent className="p-5"><div className="flex items-center gap-2 mb-3"><ShieldAlert className="size-4 text-pink-500"/><p className="font-mono text-xs font-bold">RESEARCH-ONLY NOTICE</p></div><p className="font-mono text-[11px] leading-5 text-slate-500">Scores are screening signals, not financial advice or a profitability guarantee. No buy, sell, wallet, or order execution exists in this product.</p></CardContent></Card></aside></div>
+    </main></div>;
+}
+
+function Stat({ label, value, accent }: { label: string; value: string; accent: string }) { return <div className={`border border-slate-300 bg-white p-4 relative overflow-hidden`}><div className={`absolute top-0 left-0 w-full h-1 bg-${accent === "cyan" ? "cyan" : accent === "pink" ? "pink" : accent === "lime" ? "lime" : "slate"}-300`}/><p className="font-mono text-[10px] text-slate-500 uppercase tracking-wider">{label}</p><p className="text-3xl font-black mt-2">{value}</p></div> }
+function Detail({ token, onClose }: { token: RadarToken; onClose: () => void }) { return <Card className="rounded-none border-slate-300"><CardHeader className="border-b border-slate-200"><div className="flex justify-between"><div><p className="font-mono text-[10px] text-slate-400">{token.chainName} / {token.dexId}</p><CardTitle className="text-2xl font-black">{token.symbol}</CardTitle></div><button onClick={onClose} className="font-mono text-xs text-slate-400">CLOSE ×</button></div></CardHeader><CardContent className="p-5 space-y-5"><div className="grid grid-cols-2 gap-2"><Score label="Potential" score={token.potentialScore}/><Score label="Risk" score={token.riskScore} inverse/></div><Metric label="Price" value={token.priceUsd == null ? "—" : `$${price.format(token.priceUsd)}`}/><Metric label="Liquidity" value={`$${money.format(token.liquidityUsd)}`}/><Metric label="24h volume" value={`$${money.format(token.volume24h)}`}/><Metric label="Data age" value={`${ageLabel(token.ageMinutes)} / ${token.freshness.toUpperCase()}`}/><div><p className="font-mono text-[10px] uppercase text-emerald-700 mb-2">Potential reasons</p>{token.potentialReasons.map(r => <p key={r} className="font-mono text-[11px] mb-1">+ {r}</p>)}</div><div><p className="font-mono text-[10px] uppercase text-rose-700 mb-2">Risk reasons</p>{token.riskReasons.map(r => <p key={r} className="font-mono text-[11px] mb-1">! {r}</p>)}</div><a href={token.url} target="_blank" rel="noreferrer" className="h-10 border border-slate-950 bg-slate-950 text-white flex items-center justify-center gap-2 font-mono text-xs hover:bg-cyan-600">Verify on market page <ExternalLink className="size-3"/></a></CardContent></Card> }
+function Score({ label, score, inverse = false }: { label: string; score: number; inverse?: boolean }) { return <div className={`border p-3 ${scoreTone(score, inverse)}`}><p className="font-mono text-[10px] uppercase">{label}</p><p className="text-3xl font-black">{score}<span className="text-sm">/100</span></p></div> }
+function Metric({ label, value }: { label: string; value: string }) { return <div className="flex justify-between border-b border-slate-100 py-2 font-mono text-xs"><span className="text-slate-500">{label}</span><span>{value}</span></div> }

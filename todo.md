@@ -1,0 +1,22 @@
+# Project TODO
+
+- [ ] Define research-only product boundaries and domain vocabulary
+- [ ] Add normalized token discovery data model and seed-free public-data adapter contract
+- [ ] Add transparent potential score with visible positive factors and no-investment-guarantee disclaimer
+- [ ] Add transparent risk score with low-liquidity, holder-concentration, contract-warning, and stale-data reasons
+- [ ] Build blueprint-inspired dashboard layout with token table, sortable columns, filters, search, and refresh state
+- [ ] Build token detail view with score breakdowns, key metrics, warnings, and explorer/market links
+- [ ] Add personal watchlist persistence for authenticated users
+- [ ] Add configurable potential-score threshold and watched-token high-risk notification preferences
+- [ ] Add notification evaluation endpoint/job without buy or sell execution
+- [ ] Integrate public market/on-chain data behind server-side adapters and freshness metadata
+- [ ] Add database schema, query helpers, and typed tRPC procedures
+- [ ] Add Vitest coverage for scoring, freshness, filtering, watchlist, and notification guards
+- [ ] Add README.md with product scope, architecture, setup, safety posture, and data-source notes
+- [ ] Add .env.example with documented non-secret configuration names
+- [ ] Add Vercel deployment configuration and instructions
+- [ ] Verify .gitignore excludes env files, logs, dependencies, build output, and private runtime data
+- [ ] Run typecheck, tests, build, and responsive visual verification
+- [ ] Create final checkpoint and prepare GitHub/Vercel handoff instructions
+- [ ] Create a new private GitHub repository named memecoin-radar and push the verified project
+- [ ] Provide exact Vercel import settings for the new repository
