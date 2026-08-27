@@ -51,4 +51,23 @@ export const alertPreferences = mysqlTable("alert_preferences", {
 export type WatchlistEntry = typeof watchlistEntries.$inferSelect;
 export type AlertPreference = typeof alertPreferences.$inferSelect;
 
+export const sourceHealth = mysqlTable("source_health", {
+  id: int("id").autoincrement().primaryKey(),
+  source: varchar("source", { length: 32 }).notNull().unique(),
+  endpoint: varchar("endpoint", { length: 255 }).notNull(),
+  status: mysqlEnum("status", ["healthy", "stale", "down"]).notNull(),
+  httpStatus: int("httpStatus"),
+  latencyMs: int("latencyMs").notNull(),
+  recordCount: int("recordCount").notNull(),
+  dataAgeSeconds: int("dataAgeSeconds").notNull(),
+  lastCheckedAt: timestamp("lastCheckedAt").notNull(),
+  lastSuccessAt: timestamp("lastSuccessAt"),
+  errorMessage: text("errorMessage"),
+  alertFingerprint: varchar("alertFingerprint", { length: 255 }),
+  lastAlertedAt: timestamp("lastAlertedAt"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SourceHealth = typeof sourceHealth.$inferSelect;
+
 // TODO: Add your tables here
