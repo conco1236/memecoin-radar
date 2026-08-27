@@ -35,6 +35,8 @@
 - [x] Add detailed Vietnamese tooltips for volume filter and OHLCV freshness/status
 - [x] Translate primary dashboard labels and messages into Vietnamese
 - [x] Sync latest changes to GitHub repository main branch
-- [ ] Complete Vietnamese localization for remaining visible controls, table headers, detail labels, and alert messages
-- [ ] Add Vietnamese OHLCV tooltip for fresh, aging, stale, and unavailable states
-- [ ] Commit and push sparkline-range, tooltip, and Vietnamese UI changes to GitHub main
+- [x] Complete Vietnamese localization for remaining visible controls, table headers, detail labels, and alert messages
+- [x] Add Vietnamese OHLCV tooltip for fresh, aging, stale, and unavailable states
+- [x] Commit and push sparkline-range, tooltip, and Vietnamese UI changes to GitHub main
+- [ ] Finish remaining Vietnamese localization in visible UI text, including mixed headers such as Token / chuỗi
+- [ ] Commit and push final post-localization and OHLCV-tooltip edits to GitHub main, then verify remote SHA
