@@ -47,7 +47,20 @@ The repository is Vercel-ready through `vercel.json`. Use these exact import val
 | Node runtime | Use the project default / Node 22-compatible runtime |
 |
 
-Import the GitHub repository into Vercel, keep the project root at the repository root, and add the managed environment variables listed in `.env.template` through Vercel Project Settings → Environment Variables. Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
+Import the GitHub repository into Vercel, keep the project root at the repository root, and add these variables through Vercel Project Settings → Environment Variables:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DEXSCREENER_API_BASE_URL` | Optional | Public data base URL; defaults to `https://api.dexscreener.com` |
+| `DATABASE_URL` | Managed production | Database connection for the existing project runtime |
+| `JWT_SECRET` | Managed production | Session signing |
+| `VITE_APP_ID` | Managed production | Manus OAuth application identifier |
+| `OAUTH_SERVER_URL` | Managed production | OAuth backend base URL |
+| `VITE_OAUTH_PORTAL_URL` | Managed production | Frontend login portal |
+| `BUILT_IN_FORGE_API_URL` | Managed production | Managed backend API base URL |
+| `BUILT_IN_FORGE_API_KEY` | Managed production | Server-side managed API credential |
+
+Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
 
 The current watchlist and alert threshold are browser-local, which makes the first deployment immediately usable without a migration. Authenticated/server-backed preferences and a durable notification worker remain follow-up work. The current alert is an in-app notice evaluated when the dashboard refreshes; it is not an email, Telegram, push, or background notification.
 

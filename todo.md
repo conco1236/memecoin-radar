@@ -17,9 +17,9 @@
 - [x] Add Vercel deployment configuration and instructions
 - [x] Verify .gitignore excludes env files, logs, dependencies, build output, and private runtime data
 - [x] Run typecheck, tests, build, and responsive visual verification
-- [ ] Create final checkpoint and prepare GitHub/Vercel handoff instructions
+- [x] Create final checkpoint and prepare GitHub/Vercel handoff instructions
 - [x] Create a new private GitHub repository named memecoin-radar and push the verified project
 - [x] Provide exact Vercel import settings for the new repository
-- [ ] Add explicit Vercel handoff values: repository, root directory, install/build commands, output expectations, and environment list
-- [ ] Add mobile screenshot evidence to responsive verification
-- [ ] Document local-only watchlist and in-app alert limitations in the final handoff
+- [x] Add explicit Vercel handoff values: repository, root directory, install/build commands, output expectations, and environment list
+- [x] Add mobile screenshot evidence to responsive verification
+- [x] Document local-only watchlist and in-app alert limitations in the final handoff
