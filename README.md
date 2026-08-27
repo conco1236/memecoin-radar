@@ -31,6 +31,14 @@ pnpm build
 
 The Settings page (`/settings`) lets an authenticated user choose potential and high-risk thresholds and select fixed UTC delivery slots: 09:00, 13:00, 18:00, or 21:00. Saving an enabled schedule creates or updates one Heartbeat job at `/api/scheduled/telegramAlerts`. The callback authenticates the cron task by `taskUid`, skips orphaned or disabled schedules, and suppresses duplicate fingerprints. **Deploy the project to production before enabling a schedule**, because sandbox preview URLs are not reachable by the scheduler. Telegram delivery remains research-only and never executes trades.
 
+## Data-source health-check
+
+The dashboard exposes a public `health.sources` procedure that reports the latest DEX Screener and GeckoTerminal checks, including HTTP status, latency, record count, upstream data age, and a `healthy`, `stale`, or `down` state. A successful response with no records is marked stale; timestamped upstream records older than 15 minutes are also marked stale; network errors and non-2xx responses are marked down. The dashboard refreshes this status every 60 seconds without inventing market data.
+
+The scheduled callback is `/api/scheduled/healthCheck`. It authenticates Heartbeat cron requests, runs both source checks, persists snapshots in `source_health`, and sends a Telegram warning only when a source changes into a new stale/down condition. Repeated retries for the same condition are suppressed using the stored fingerprint. It remains research-only and never places trades.
+
+After deploying the callback, create one project-level Heartbeat job with the 6-field UTC cron `0 */10 * * * *` and callback path `/api/scheduled/healthCheck`. Do not enable this job against a sandbox preview URL. The project owner must redeploy first, then create the production Heartbeat job from the management environment; keep the Telegram variables configured if external alerts are required.
+
 ## Environment variables
 
 Copy `.env.template` to a local environment file only for local development. Never commit `.env` or production credentials. The Manus project supplies database, auth, and server runtime variables through its managed environment. `DEXSCREENER_API_BASE_URL` is optional and defaults to the public API base URL.
@@ -67,6 +75,8 @@ Import the GitHub repository into Vercel, keep the project root at the repositor
 Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
 
 ### Post-deploy verification
+
+For OAuth, confirm that the deployment exposes `/api/oauth/callback` as a serverless function. The browser login flow must return from the OAuth portal to that path, set the host-only `app_session_id` cookie, and redirect to `/`. A direct request without `code` and `state` should return HTTP 400 rather than a Vercel 404 or function invocation error.
 
 After each Vercel redeploy, verify that `/` renders the dashboard, `/settings` renders the authenticated settings shell, and the browser Network panel shows a successful request to `/api/trpc/tokens.discover` with a JSON response containing `result.data`. If the API returns `FUNCTION_INVOCATION_FAILED`, check Vercel Runtime Logs and confirm the following production variables are present: `DATABASE_URL`, `JWT_SECRET`, `VITE_APP_ID`, `OAUTH_SERVER_URL`, `VITE_OAUTH_PORTAL_URL`, `BUILT_IN_FORGE_API_URL`, `BUILT_IN_FORGE_API_KEY`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID`. The public discovery route must work before enabling the Heartbeat schedule.
 
