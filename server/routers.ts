@@ -1,16 +1,16 @@
 import { z } from "zod";
 import { parse as parseCookie } from "cookie";
-import { createHeartbeatJob, updateHeartbeatJob, deleteHeartbeatJob } from "./_core/heartbeat";
-import { protectedProcedure } from "./_core/trpc";
-import { getAlertPreferences, getWatchlist, addWatchlistEntry, removeWatchlistEntry, saveAlertPreferences } from "./db";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
-import { discoverTokens } from "./marketData";
-import { shouldAlert } from "./researchGuards";
-import { sendTelegramResearchAlert, type TelegramLocale } from "./telegram";
-import { buildDailyUtcCron, type FixedAlertTime, type SupportedTimezone } from "./scheduleGuards";
-import { COOKIE_NAME } from "@shared/const";
+import { createHeartbeatJob, updateHeartbeatJob, deleteHeartbeatJob } from "./_core/heartbeat.js";
+import { protectedProcedure } from "./_core/trpc.js";
+import { getAlertPreferences, getWatchlist, addWatchlistEntry, removeWatchlistEntry, saveAlertPreferences } from "./db.js";
+import { getSessionCookieOptions } from "./_core/cookies.js";
+import { systemRouter } from "./_core/systemRouter.js";
+import { publicProcedure, router } from "./_core/trpc.js";
+import { discoverTokens } from "./marketData.js";
+import { shouldAlert } from "./researchGuards.js";
+import { sendTelegramResearchAlert, type TelegramLocale } from "./telegram.js";
+import { buildDailyUtcCron, type FixedAlertTime, type SupportedTimezone } from "./scheduleGuards.js";
+import { COOKIE_NAME } from "../shared/const.js";
 
 export const appRouter = router({
   system: systemRouter,

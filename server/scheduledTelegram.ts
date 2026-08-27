@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import { sdk } from "./_core/sdk";
-import { getAlertPreferencesByTaskUid, getWatchlist, recordAlertDelivery } from "./db";
-import { discoverTokens } from "./marketData";
-import { shouldAlert } from "./researchGuards";
-import { decideScheduledDelivery, isCronTaskUser } from "./scheduleGuards";
-import { sendTelegramResearchAlert } from "./telegram";
+import { sdk } from "./_core/sdk.js";
+import { getAlertPreferencesByTaskUid, getWatchlist, recordAlertDelivery } from "./db.js";
+import { discoverTokens } from "./marketData.js";
+import { shouldAlert } from "./researchGuards.js";
+import { decideScheduledDelivery, isCronTaskUser } from "./scheduleGuards.js";
+import { sendTelegramResearchAlert } from "./telegram.js";
 
 export async function scheduledTelegramAlerts(req: Request, res: Response) {
   const startedAt = new Date().toISOString();

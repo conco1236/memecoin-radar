@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDailyUtcCron, decideScheduledDelivery, isCronTaskUser } from "./scheduleGuards";
+import { buildDailyUtcCron, decideScheduledDelivery, isCronTaskUser } from "./scheduleGuards.js";
 
 describe("schedule guards", () => {
   it("builds a six-field daily UTC cron from fixed slots", () => {

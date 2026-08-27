@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldAlert, watchlistEntryKey } from "./researchGuards";
+import { shouldAlert, watchlistEntryKey } from "./researchGuards.js";
 
 describe("research guards", () => {
   it("scopes watchlist identity by both user and token", () => {

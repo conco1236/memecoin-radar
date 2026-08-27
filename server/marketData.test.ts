@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scorePair } from "./marketData";
+import { scorePair } from "./marketData.js";
 
 describe("memecoin research scoring", () => {
   it("raises risk and explains thin liquidity", () => {

@@ -1,4 +1,4 @@
-import type { RadarToken } from "./marketData";
+import type { RadarToken } from "./marketData.js";
 
 export type TelegramLocale = "vi" | "en";
 

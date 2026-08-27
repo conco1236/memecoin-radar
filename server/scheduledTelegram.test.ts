@@ -14,7 +14,7 @@ vi.mock("./db", () => ({ getAlertPreferencesByTaskUid: mocks.getAlertPreferences
 vi.mock("./marketData", () => ({ discoverTokens: mocks.discoverTokens }));
 vi.mock("./telegram", () => ({ sendTelegramResearchAlert: mocks.sendTelegramResearchAlert }));
 
-import { scheduledTelegramAlerts } from "./scheduledTelegram";
+import { scheduledTelegramAlerts } from "./scheduledTelegram.js";
 
 function response() {
   const result: { statusCode?: number; body?: unknown } = {};

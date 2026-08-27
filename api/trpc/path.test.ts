@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeTrpcPath } from "./[...path]";
+import { normalizeTrpcPath } from "./[...path].js";
 
 describe("Vercel tRPC path normalization", () => {
   it("strips the /api/trpc prefix while preserving query parameters", () => {

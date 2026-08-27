@@ -69,3 +69,8 @@
 - [x] Prepare the production tRPC wrapper path normalization and safe runtime error logging; provide a redeploy-ready checkpoint
 - [x] Normalize and unit-test the Vercel tRPC catch-all request path before createExpressMiddleware
 - [x] Document explicit post-redeploy API verification steps and required Vercel environment variables; actual production verification awaits owner redeploy
+- [ ] Recheck the current Vercel deployment frontend and `/api/trpc/tokens.discover` response
+- [ ] Compare the current Vercel failure with the latest GitHub commit and documented environment requirements
+- [ ] Resolve the remaining production issue or provide the exact missing Vercel configuration needed
+
+- [x] Fix Vercel production ESM module resolution for the `/api/trpc` serverless function and its server import graph; typecheck, 20 Vitest tests, and production build pass
