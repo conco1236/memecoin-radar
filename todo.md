@@ -69,8 +69,35 @@
 - [x] Prepare the production tRPC wrapper path normalization and safe runtime error logging; provide a redeploy-ready checkpoint
 - [x] Normalize and unit-test the Vercel tRPC catch-all request path before createExpressMiddleware
 - [x] Document explicit post-redeploy API verification steps and required Vercel environment variables; actual production verification awaits owner redeploy
-- [ ] Recheck the current Vercel deployment frontend and `/api/trpc/tokens.discover` response
-- [ ] Compare the current Vercel failure with the latest GitHub commit and documented environment requirements
-- [ ] Resolve the remaining production issue or provide the exact missing Vercel configuration needed
+- [x] Recheck the current Vercel deployment frontend and `/api/trpc/tokens.discover` response
+- [x] Compare the current Vercel failure with the latest GitHub commit and documented environment requirements
+- [x] Resolve the remaining production issue or provide the exact missing Vercel configuration needed
 
 - [x] Fix Vercel production ESM module resolution for the `/api/trpc` serverless function and its server import graph; typecheck, 20 Vitest tests, and production build pass
+
+- [x] Define health-check contract for DEX Screener and GeckoTerminal freshness, latency, and error states
+- [x] Add server-side source health checks, persistence, typed tRPC query, and scheduled Heartbeat callback
+- [x] Add stale/source-failure Telegram alerting with idempotency and research-only safeguards
+- [x] Add bilingual health panel and exchange/source status to the dashboard
+- [x] Add Vitest coverage, run typecheck/tests/build, and verify responsive UI
+- [x] Save checkpoint and document production redeploy/Heartbeat activation steps
+- [x] Add scheduled health callback tests for cron auth, duplicate suppression, healthy path, unhealthy send, and safe Telegram-missing handling
+- [x] Make missing Telegram credentials a bounded 2xx health-check skip while preserving snapshots
+- [x] Perform desktop and mobile browser verification of the bilingual health panel
+
+- [x] Diagnose the reported login failure across frontend OAuth start, callback, session cookie, and production configuration
+- [x] Fix the login flow and preserve authenticated access to Settings/Telegram features
+- [x] Add or update authentication tests and verify typecheck, tests, build, and runtime routes
+- [x] Save a redeploy-ready checkpoint and document the Vercel redeploy steps
+- [x] Add a positive OAuth callback test for token exchange, user upsert, session cookie, and redirect
+- [ ] Verify the new OAuth callback route in a deployed/runtime environment after Vercel redeploy
+- [ ] Browser-test authenticated Settings and Telegram access after login
+
+- [ ] Recheck the redeployed production OAuth callback status and capture the exact failure response
+- [ ] Verify the deployed OAuth portal redirect URI and Vercel environment values against the live domain
+- [ ] Fix the remaining post-redeploy login failure and add a regression test for the discovered cause
+- [ ] Verify authenticated Settings and Telegram access after the corrected deployment
+
+- [ ] Re-audit the supplied production domain and Vercel project deployment after the user reports the login fix is still not live
+- [ ] Identify whether the live domain is assigned to the wrong deployment, project, branch, or root directory
+- [ ] Correct the deployment source/configuration or prepare exact owner-side Vercel action and verify OAuth route
