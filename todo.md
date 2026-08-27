@@ -64,3 +64,8 @@
 - [x] Verify local production build and Vercel handoff requirements for the Manus project; actual production settings await owner-side Import/Redeploy
 - [x] Save a redeploy-ready checkpoint and provide exact Vercel redeploy steps
 - [x] Document that the Vercel team currently has no listed project linked to conco1236/memecoin-radar; production settings require a user-side Import/Redeploy first
+- [ ] Diagnose why the deployed Vercel app differs from the Manus review preview
+- [ ] Verify production routes, API responses, environment variables, and runtime logs
+- [ ] Fix the production discrepancy and provide a redeploy-ready checkpoint
+- [ ] Normalize the Vercel tRPC catch-all request path before createExpressMiddleware so production discovery does not crash
+- [ ] Verify production API behavior after redeploy and document any missing Vercel environment variables
