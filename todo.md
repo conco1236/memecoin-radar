@@ -25,3 +25,6 @@
 - [x] Document local-only watchlist and in-app alert limitations in the final handoff
 - [x] Fix watchlist deduplication to scope by user and token, and add a pair unique constraint
 - [x] Add tests for multi-user watchlist identity and alert guard behavior
+- [x] Diagnose Vercel deployment failure from deployment logs and GitHub repository state
+- [x] Fix Vercel entrypoint/build/runtime configuration and verify production behavior
+- [x] Push deployment fix to GitHub and document redeploy steps
