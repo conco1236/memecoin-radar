@@ -31,3 +31,10 @@
 - [x] Add 24h trading-volume minimum/maximum filter to discovery controls
 - [x] Add loading skeleton rows while newly created memecoins are loading
 - [x] Add a data-backed mini price sparkline for each listed memecoin
+- [x] Add selectable sparkline ranges: 1h, 4h, and 24h using public OHLCV data
+- [x] Add detailed Vietnamese tooltips for volume filter and OHLCV freshness/status
+- [x] Translate primary dashboard labels and messages into Vietnamese
+- [x] Sync latest changes to GitHub repository main branch
+- [ ] Complete Vietnamese localization for remaining visible controls, table headers, detail labels, and alert messages
+- [ ] Add Vietnamese OHLCV tooltip for fresh, aging, stale, and unavailable states
+- [ ] Commit and push sparkline-range, tooltip, and Vietnamese UI changes to GitHub main

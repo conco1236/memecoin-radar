@@ -1,4 +1,5 @@
 export type SortKey = "age" | "liquidity" | "volume" | "momentum" | "potential" | "risk";
+export type SparklineRange = "1h" | "4h" | "24h";
 
 export type RadarToken = {
   id: string;
@@ -82,16 +83,17 @@ async function getJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-async function getSparkline(chainId: string, pairAddress: string): Promise<number[]> {
+async function getSparkline(chainId: string, pairAddress: string, range: SparklineRange): Promise<number[]> {
   const network = geckoNetworks[chainId];
   if (!network || !pairAddress) return [];
   try {
-    const data = await getJson<{ data?: { attributes?: { ohlcv_list?: number[][] } } }>(`${GECKO_API}/networks/${network}/pools/${pairAddress}/ohlcv/hour?aggregate=1&limit=24`);
+    const [timeframe, aggregate, limit] = range === "1h" ? ["minute", 5, 12] : range === "4h" ? ["hour", 1, 4] : ["hour", 1, 24];
+    const data = await getJson<{ data?: { attributes?: { ohlcv_list?: number[][] } } }>(`${GECKO_API}/networks/${network}/pools/${pairAddress}/ohlcv/${timeframe}?aggregate=${aggregate}&limit=${limit}`);
     return (data.data?.attributes?.ohlcv_list ?? []).map(candle => Number(candle[4])).filter(Number.isFinite).reverse();
   } catch { return []; }
 }
 
-export async function discoverTokens(args: { chain?: string; search?: string; sort?: SortKey; minVolume24h?: number; maxVolume24h?: number; limit?: number }): Promise<{ tokens: RadarToken[]; fetchedAt: number; source: string; warning?: string }> {
+export async function discoverTokens(args: { chain?: string; search?: string; sort?: SortKey; minVolume24h?: number; maxVolume24h?: number; sparklineRange?: SparklineRange; limit?: number }): Promise<{ tokens: RadarToken[]; fetchedAt: number; source: string; warning?: string }> {
   const fetchedAt = Date.now();
   try {
     const profiles = await getJson<DexProfile[]>(`${API}/token-profiles/latest/v1`);
@@ -107,7 +109,7 @@ export async function discoverTokens(args: { chain?: string; search?: string; so
         const freshness = ageMinutes < 15 ? "fresh" : ageMinutes < 60 ? "aging" : "stale";
         const chainId = pair.chainId;
         if (!chainId) return null;
-        const sparkline = await getSparkline(chainId, pair.pairAddress ?? "");
+        const sparkline = await getSparkline(chainId, pair.pairAddress ?? "", args.sparklineRange ?? "24h");
         const token: RadarToken = {
           id: `${chainId}:${pair.pairAddress}`,
           chainId, chainName: chainNames[chainId] ?? chainId, dexId: pair.dexId ?? "DEX", pairAddress: pair.pairAddress ?? "", tokenAddress: profile.tokenAddress,

@@ -23,6 +23,7 @@ export const appRouter = router({
       chain: z.string().optional(), search: z.string().max(80).optional(),
       sort: z.enum(["age", "liquidity", "volume", "momentum", "potential", "risk"]).optional(),
       minVolume24h: z.number().min(0).optional(), maxVolume24h: z.number().min(0).optional(),
+      sparklineRange: z.enum(["1h", "4h", "24h"]).optional(),
       limit: z.number().int().min(1).max(24).optional(),
     }).optional()).query(({ input }) => discoverTokens(input ?? {})),
   }),
