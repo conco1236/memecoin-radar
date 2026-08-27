@@ -126,8 +126,8 @@ export async function discoverTokens(args: { chain?: string; search?: string; so
     if (args.maxVolume24h !== undefined) tokens = tokens.filter(t => t.volume24h <= args.maxVolume24h!);
     const key = args.sort ?? "potential";
     tokens.sort((a, b) => key === "age" ? a.ageMinutes - b.ageMinutes : key === "liquidity" ? b.liquidityUsd - a.liquidityUsd : key === "volume" ? b.volume24h - a.volume24h : key === "momentum" ? b.priceChange24h - a.priceChange24h : key === "risk" ? b.riskScore - a.riskScore : b.potentialScore - a.potentialScore);
-    return { tokens: tokens.slice(0, args.limit ?? 12), fetchedAt, source: "DEX Screener public API" };
+    return { tokens: tokens.slice(0, args.limit ?? 12), fetchedAt, source: "API công khai DEX Screener" };
   } catch (error) {
-    return { tokens: [], fetchedAt, source: "DEX Screener public API", warning: error instanceof Error ? error.message : "Không thể tải dữ liệu công khai" };
+    return { tokens: [], fetchedAt, source: "API công khai DEX Screener", warning: error instanceof Error ? error.message : "Không thể tải dữ liệu công khai" };
   }
 }
