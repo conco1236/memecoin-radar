@@ -64,8 +64,8 @@
 - [x] Verify local production build and Vercel handoff requirements for the Manus project; actual production settings await owner-side Import/Redeploy
 - [x] Save a redeploy-ready checkpoint and provide exact Vercel redeploy steps
 - [x] Document that the Vercel team currently has no listed project linked to conco1236/memecoin-radar; production settings require a user-side Import/Redeploy first
-- [ ] Diagnose why the deployed Vercel app differs from the Manus review preview
-- [ ] Verify production routes, API responses, environment variables, and runtime logs
-- [ ] Fix the production discrepancy and provide a redeploy-ready checkpoint
-- [ ] Normalize the Vercel tRPC catch-all request path before createExpressMiddleware so production discovery does not crash
-- [ ] Verify production API behavior after redeploy and document any missing Vercel environment variables
+- [x] Diagnose why the deployed Vercel app differs from the Manus review preview
+- [x] Verify the observed production failure: frontend renders but `/api/trpc/tokens.discover` returns `FUNCTION_INVOCATION_FAILED` 500; private Vercel runtime logs unavailable to the configured team
+- [x] Prepare the production tRPC wrapper path normalization and safe runtime error logging; provide a redeploy-ready checkpoint
+- [x] Normalize and unit-test the Vercel tRPC catch-all request path before createExpressMiddleware
+- [x] Document explicit post-redeploy API verification steps and required Vercel environment variables; actual production verification awaits owner redeploy

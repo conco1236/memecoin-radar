@@ -66,6 +66,10 @@ Import the GitHub repository into Vercel, keep the project root at the repositor
 
 Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
 
+### Post-deploy verification
+
+After each Vercel redeploy, verify that `/` renders the dashboard, `/settings` renders the authenticated settings shell, and the browser Network panel shows a successful request to `/api/trpc/tokens.discover` with a JSON response containing `result.data`. If the API returns `FUNCTION_INVOCATION_FAILED`, check Vercel Runtime Logs and confirm the following production variables are present: `DATABASE_URL`, `JWT_SECRET`, `VITE_APP_ID`, `OAUTH_SERVER_URL`, `VITE_OAUTH_PORTAL_URL`, `BUILT_IN_FORGE_API_URL`, `BUILT_IN_FORGE_API_KEY`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID`. The public discovery route must work before enabling the Heartbeat schedule.
+
 The browser watchlist remains available locally, while authenticated alert preferences and scheduled Telegram delivery are stored server-side. The Settings page requires login to create or change a schedule. The first scheduled callback only becomes reachable after production deployment and must be enabled from Settings; it is not a trading or execution worker.
 
 The public data integration is server-side so that API calls and future rate-limit controls remain outside the browser. The default Autoscale deployment is appropriate for request-driven dashboard refreshes. High-frequency polling or always-on notification delivery should use a managed background/heartbeat configuration rather than a browser tab.

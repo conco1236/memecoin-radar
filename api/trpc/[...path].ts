@@ -3,6 +3,10 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "../../server/routers";
 import { createContext } from "../../server/_core/context";
 
+export function normalizeTrpcPath(url: string): string {
+  return url.startsWith("/api/trpc") ? url.slice("/api/trpc".length) || "/" : url;
+}
+
 const app = express();
 app.disable("x-powered-by");
 app.use(express.json({ limit: "2mb" }));
@@ -11,7 +15,7 @@ app.use(express.json({ limit: "2mb" }));
 // req.url. Strip the deployment prefix so tRPC sees its canonical procedure path.
 app.use((req, _res, next) => {
   if (req.url.startsWith("/api/trpc")) {
-    req.url = req.url.slice("/api/trpc".length) || "/";
+    req.url = normalizeTrpcPath(req.url);
   }
   next();
 });
