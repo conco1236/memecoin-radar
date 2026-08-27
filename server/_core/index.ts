@@ -9,6 +9,7 @@ import { appRouter } from "../routers.js";
 import { createContext } from "./context.js";
 import { serveStatic, setupVite } from "./vite.js";
 import { scheduledTelegramAlerts } from "../scheduledTelegram.js";
+import { scheduledSourceHealth } from "../scheduledHealth.js";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -46,6 +47,7 @@ async function startServer() {
     })
   );
   app.post("/api/scheduled/telegramAlerts", scheduledTelegramAlerts);
+  app.post("/api/scheduled/healthCheck", scheduledSourceHealth);
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
