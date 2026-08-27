@@ -1,0 +1,1 @@
+ALTER TABLE `watchlist_entries` ADD CONSTRAINT `watchlist_user_token_unique` UNIQUE(`userId`,`tokenId`);

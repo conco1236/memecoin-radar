@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, watchlistEntries, alertPreferences } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,34 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getWatchlist(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(watchlistEntries).where(eq(watchlistEntries.userId, userId));
+}
+
+export async function addWatchlistEntry(userId: number, tokenId: string, chainId: string) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select().from(watchlistEntries).where(and(eq(watchlistEntries.userId, userId), eq(watchlistEntries.tokenId, tokenId))).limit(1);
+  if (existing.length === 0) await db.insert(watchlistEntries).values({ userId, tokenId, chainId });
+}
+
+export async function removeWatchlistEntry(userId: number, tokenId: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(watchlistEntries).where(and(eq(watchlistEntries.userId, userId), eq(watchlistEntries.tokenId, tokenId)));
+}
+
+export async function getAlertPreferences(userId: number) {
+  const db = await getDb();
+  if (!db) return { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1 };
+  const rows = await db.select().from(alertPreferences).where(eq(alertPreferences.userId, userId)).limit(1);
+  return rows[0] ?? { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1 };
+}
+
+export async function saveAlertPreferences(userId: number, values: { potentialThreshold: number; highRiskThreshold: number; enabled: number }) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(alertPreferences).values({ userId, ...values }).onDuplicateKeyUpdate({ set: values });
+}

@@ -8,9 +8,9 @@
 - [x] Build token detail view with score breakdowns, key metrics, warnings, and explorer/market links
 - [x] Add personal browser-local watchlist persistence
 - [x] Add configurable potential-score threshold and watched-token high-risk notification preferences
-- [ ] Add notification evaluation endpoint/job without buy or sell execution
+- [x] Add notification evaluation endpoint/job without buy or sell execution
 - [x] Integrate public market/on-chain data behind server-side adapters and freshness metadata
-- [ ] Add database schema, query helpers, and typed tRPC procedures
+- [x] Add database schema, query helpers, and typed tRPC procedures
 - [x] Add Vitest coverage for core scoring guards
 - [x] Add README.md with product scope, architecture, setup, safety posture, and data-source notes
 - [x] Add .env.template with documented non-secret configuration names
@@ -23,3 +23,5 @@
 - [x] Add explicit Vercel handoff values: repository, root directory, install/build commands, output expectations, and environment list
 - [x] Add mobile screenshot evidence to responsive verification
 - [x] Document local-only watchlist and in-app alert limitations in the final handoff
+- [x] Fix watchlist deduplication to scope by user and token, and add a pair unique constraint
+- [x] Add tests for multi-user watchlist identity and alert guard behavior
