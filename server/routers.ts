@@ -7,6 +7,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { discoverTokens } from "./marketData";
 import { shouldAlert } from "./researchGuards";
+import { sendTelegramResearchAlert, type TelegramLocale } from "./telegram";
 
 export const appRouter = router({
   system: systemRouter,
@@ -33,6 +34,11 @@ export const appRouter = router({
     removeFromWatchlist: protectedProcedure.input(z.object({ tokenId: z.string().max(180) })).mutation(({ ctx, input }) => removeWatchlistEntry(ctx.user.id, input.tokenId).then(() => ({ success: true }))),
     alertPreferences: protectedProcedure.query(({ ctx }) => getAlertPreferences(ctx.user.id)),
     saveAlertPreferences: protectedProcedure.input(z.object({ potentialThreshold: z.number().int().min(0).max(100), highRiskThreshold: z.number().int().min(0).max(100), enabled: z.number().int().min(0).max(1) })).mutation(({ ctx, input }) => saveAlertPreferences(ctx.user.id, input).then(() => ({ success: true }))),
+    sendTelegramAlerts: protectedProcedure.input(z.object({ potentialThreshold: z.number().int().min(0).max(100), highRiskThreshold: z.number().int().min(0).max(100), watchedTokenIds: z.array(z.string().max(180)).max(100), locale: z.enum(["vi", "en"]) })).mutation(async ({ input }) => {
+      const snapshot = await discoverTokens({ limit: 24 });
+      const matches = snapshot.tokens.filter(token => shouldAlert({ enabled: true, potentialScore: token.potentialScore, riskScore: token.riskScore, potentialThreshold: input.potentialThreshold, highRiskThreshold: input.highRiskThreshold, watched: input.watchedTokenIds.includes(token.id) }));
+      return sendTelegramResearchAlert(matches, input.locale as TelegramLocale);
+    }),
     evaluateAlerts: protectedProcedure.input(z.object({ potentialThreshold: z.number().int().min(0).max(100), highRiskThreshold: z.number().int().min(0).max(100), watchedTokenIds: z.array(z.string().max(180)).max(100) })).query(async ({ input }) => {
       const snapshot = await discoverTokens({ limit: 24 });
       return snapshot.tokens.filter(token => shouldAlert({ enabled: true, potentialScore: token.potentialScore, riskScore: token.riskScore, potentialThreshold: input.potentialThreshold, highRiskThreshold: input.highRiskThreshold, watched: input.watchedTokenIds.includes(token.id) })).map(token => ({ tokenId: token.id, symbol: token.symbol, potentialScore: token.potentialScore, riskScore: token.riskScore, reasons: token.riskReasons }));

@@ -42,3 +42,11 @@
 - [x] Commit and push final post-localization and OHLCV-tooltip edits to GitHub main, then verify remote SHA
 - [x] Replace remaining mixed-language visible dashboard copy with fully Vietnamese wording and run a final UI text audit
 - [x] Localize the visible source label returned by the public data adapter and perform a broader display-text audit
+- [x] Add Vietnamese/English locale state and translate the primary user-facing dashboard strings
+- [x] Add component-level explanations for every potential-score factor and risk-score factor
+- [x] Add Telegram alert control and server-side delivery for qualifying memecoins
+- [x] Add guarded on-demand alert evaluation with Telegram delivery and no trading actions
+- [x] Add Telegram credential validation and alert-guard test coverage
+- [x] Wire refresh timestamp, alert banner, age labels, and volume/sparkline tooltip bodies to the active locale
+- [x] Add a broader locale text audit for both Vietnamese and English modes
+- [x] Run a final broader UI text audit for both Vietnamese and English modes after the latest locale edits, including visual verification
