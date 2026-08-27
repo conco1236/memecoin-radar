@@ -9,6 +9,24 @@ function formatToken(token: RadarToken, locale: TelegramLocale) {
   return `• ${title} ${token.symbol} (${token.chainName}) — ${potential} ${token.potentialScore}/100, ${risk} ${token.riskScore}/100\n  ${token.url}`;
 }
 
+export async function sendTelegramSourceHealthAlert(lines: string[], locale: TelegramLocale) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) throw new Error("Telegram chưa được cấu hình ở phía server");
+  if (lines.length === 0) return { sent: false, count: 0 };
+  const heading = locale === "vi" ? "MEMECOIN RADAR / SỨC KHỎE NGUỒN DỮ LIỆU" : "MEMECOIN RADAR / DATA SOURCE HEALTH";
+  const disclaimer = locale === "vi" ? "Chỉ giám sát dữ liệu nghiên cứu — không phải lời khuyên tài chính." : "Research data monitoring only — not financial advice.";
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text: `${heading}\n\n${lines.join("\\n")}\n\n${disclaimer}`, disable_web_page_preview: true }),
+  });
+  if (!response.ok) throw new Error(`Telegram API returned HTTP ${response.status}`);
+  const payload = await response.json() as { ok?: boolean };
+  if (!payload.ok) throw new Error("Telegram rejected the health alert");
+  return { sent: true, count: lines.length };
+}
+
 export async function sendTelegramResearchAlert(tokens: RadarToken[], locale: TelegramLocale) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
