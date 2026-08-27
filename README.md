@@ -51,7 +51,7 @@ The repository is Vercel-ready through `vercel.json`. Use these exact import val
 | Node runtime | Use the project default / Node 22-compatible runtime |
 |
 
-Import the GitHub repository into Vercel, keep the project root at the repository root, and add these variables through Vercel Project Settings → Environment Variables:
+Import the GitHub repository into Vercel, keep the project root at the repository root, and add these variables through Vercel Project Settings → Environment Variables. The connected Vercel team currently has no project listed for this repository, so the first Import/Redeploy must be completed by the project owner in Vercel before production settings or runtime logs can be verified.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |

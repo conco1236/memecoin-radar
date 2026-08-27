@@ -61,5 +61,6 @@
 - [x] Expose delivery-audit metadata such as lastDeliveredAt and lastDeliveredFingerprint in Settings
 - [x] Add mocked endpoint tests for scheduledTelegramAlerts covering non-cron 403, orphan, disabled, duplicate, and successful send paths
 - [x] Verify the Manus-managed database contains the latest alert_preferences scheduling columns
-- [ ] Verify Vercel production build and environment handoff for the Manus project
-- [ ] Save a redeploy-ready checkpoint and provide exact Vercel redeploy steps
+- [x] Verify local production build and Vercel handoff requirements for the Manus project; actual production settings await owner-side Import/Redeploy
+- [x] Save a redeploy-ready checkpoint and provide exact Vercel redeploy steps
+- [x] Document that the Vercel team currently has no listed project linked to conco1236/memecoin-radar; production settings require a user-side Import/Redeploy first
