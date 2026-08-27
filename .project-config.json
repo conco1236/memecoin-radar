@@ -7,7 +7,9 @@
   ],
   "dev_command": "pnpm run dev",
   "env_vars": {
-    "DATABASE_URL": "mysql://2aZPCgjwbVbivQQ.9c3e00de8109:C1eGZq5jrjdq8j8Ha7Z7@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/QzE2opuqwqZjsrSsokWQde?ssl={\"rejectUnauthorized\":true}"
+    "DATABASE_URL": "mysql://2aZPCgjwbVbivQQ.9c3e00de8109:C1eGZq5jrjdq8j8Ha7Z7@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/QzE2opuqwqZjsrSsokWQde?ssl={\"rejectUnauthorized\":true}",
+    "DRIZZLE_DATABASE_URL": "mysql://2aZPCgjwbVbivQQ.9c3e00de8109:C1eGZq5jrjdq8j8Ha7Z7@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/QzE2opuqwqZjsrSsokWQde?ssl={\"rejectUnauthorized\":true}",
+    "MANUS_WEBDEV_PROJECT_ID": "QzE2opuqwqZjsrSsokWQde"
   },
   "experiments": [
     "no_db_push"
@@ -28,10 +30,12 @@
     "OAUTH_SERVER_URL": "https://api.manus.im",
     "OWNER_NAME": "Bảo Bảo",
     "OWNER_OPEN_ID": "ht8bEr9F543vRsG38X7s2A",
+    "TELEGRAM_BOT_TOKEN": "8498307872:AAEFPP5H-DCzRikEa2gNJQYSqecXAp9SLIY",
+    "TELEGRAM_CHAT_ID": "667769372",
     "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
     "VITE_ANALYTICS_WEBSITE_ID": "7aee56e3-4d44-40d7-8b09-927d323ef7f8",
     "VITE_APP_ID": "QzE2opuqwqZjsrSsokWQde",
-    "VITE_APP_LOGO": "",
+    "VITE_APP_LOGO": "https://files.manuscdn.com/user_upload_by_module/web_dev_logo/310519663244588346/eIPZmoiYGWvobnZd.png",
     "VITE_APP_TITLE": "Memecoin Radar",
     "VITE_FRONTEND_FORGE_API_KEY": "VWgTZ9Xytb23GWvYxKb9Nz",
     "VITE_FRONTEND_FORGE_API_URL": "https://forge.manus.ai",
