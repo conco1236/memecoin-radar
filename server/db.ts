@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, watchlistEntries, alertPreferences } from "../drizzle/schema.js";
+import { InsertUser, users, watchlistEntries, alertPreferences, sourceHealth } from "../drizzle/schema.js";
 import { ENV } from './_core/env.js';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -132,4 +132,23 @@ export async function recordAlertDelivery(userId: number, fingerprint: string, d
   const db = await getDb();
   if (!db) return;
   await db.update(alertPreferences).set({ lastDeliveredFingerprint: fingerprint, lastDeliveredAt: deliveredAt }).where(eq(alertPreferences.userId, userId));
+}
+
+export async function getSourceHealthRows() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sourceHealth);
+}
+
+export async function getSourceHealthRow(source: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(sourceHealth).where(eq(sourceHealth.source, source)).limit(1);
+  return rows[0];
+}
+
+export async function saveSourceHealthAlert(source: string, fingerprint: string, alertedAt = new Date()) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(sourceHealth).set({ alertFingerprint: fingerprint, lastAlertedAt: alertedAt }).where(eq(sourceHealth.source, source));
 }
