@@ -33,7 +33,23 @@ Copy `.env.template` to a local environment file only for local development. Nev
 
 ## Vercel deployment
 
-The repository is Vercel-ready through `vercel.json`. Import the GitHub repository into Vercel, keep the project root at the repository root, and use the existing build command from `package.json`. Add the required managed environment variables in the Vercel project settings, then redeploy. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
+The repository is Vercel-ready through `vercel.json`. Use these exact import values:
+
+| Setting | Value |
+| --- | --- |
+| Git repository | `conco1236/memecoin-radar` |
+| Visibility | Private |
+| Root directory | `.` |
+| Install command | `pnpm install --frozen-lockfile` |
+| Build command | `pnpm build` |
+| Framework preset | Vite |
+| Output directory | `dist/public` |
+| Node runtime | Use the project default / Node 22-compatible runtime |
+|
+
+Import the GitHub repository into Vercel, keep the project root at the repository root, and add the managed environment variables listed in `.env.template` through Vercel Project Settings → Environment Variables. Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
+
+The current watchlist and alert threshold are browser-local, which makes the first deployment immediately usable without a migration. Authenticated/server-backed preferences and a durable notification worker remain follow-up work. The current alert is an in-app notice evaluated when the dashboard refreshes; it is not an email, Telegram, push, or background notification.
 
 The public data integration is server-side so that API calls and future rate-limit controls remain outside the browser. The default Autoscale deployment is appropriate for request-driven dashboard refreshes. High-frequency polling or always-on notification delivery should use a managed background/heartbeat configuration rather than a browser tab.
 
