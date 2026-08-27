@@ -101,3 +101,16 @@
 - [ ] Re-audit the supplied production domain and Vercel project deployment after the user reports the login fix is still not live
 - [ ] Identify whether the live domain is assigned to the wrong deployment, project, branch, or root directory
 - [ ] Correct the deployment source/configuration or prepare exact owner-side Vercel action and verify OAuth route
+
+- [x] Capture the exact post-OAuth production failure from browser navigation, callback response, and runtime logs
+- [x] Verify production OAuth portal URL, app ID, callback redirect URI, and session/state cookies
+- [x] Fix the remaining login failure and add regression coverage for the discovered cause
+- [ ] Re-test production login and authenticated Settings/Telegram access
+
+- [ ] Diagnose why the production login button does not respond to clicks
+- [ ] Fix the login button interaction and ensure it invokes the OAuth start flow
+- [ ] Add a regression test or deterministic client-side verification, run checks/build, and prepare redeploy
+
+- [x] Update Vercel Production OAuth configuration for `VITE_APP_ID` and `VITE_OAUTH_PORTAL_URL` after user confirmation
+- [x] Validate the injected OAuth configuration with an authentication regression test and production build
+- [ ] Redeploy and verify the production login button starts OAuth successfully
