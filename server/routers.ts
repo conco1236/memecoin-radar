@@ -11,6 +11,7 @@ import { shouldAlert } from "./researchGuards.js";
 import { sendTelegramResearchAlert, type TelegramLocale } from "./telegram.js";
 import { buildDailyUtcCron, type FixedAlertTime, type SupportedTimezone } from "./scheduleGuards.js";
 import { COOKIE_NAME } from "../shared/const.js";
+import { getLatestSourceHealth, runSourceHealthChecks } from "./sourceHealth.js";
 
 export const appRouter = router({
   system: systemRouter,
@@ -20,6 +21,12 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+  }),
+  health: router({
+    sources: publicProcedure.query(async () => {
+      const current = await getLatestSourceHealth();
+      return current.length ? current : runSourceHealthChecks();
     }),
   }),
   tokens: router({
