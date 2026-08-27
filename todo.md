@@ -50,3 +50,13 @@
 - [x] Wire refresh timestamp, alert banner, age labels, and volume/sparkline tooltip bodies to the active locale
 - [x] Add a broader locale text audit for both Vietnamese and English modes
 - [x] Run a final broader UI text audit for both Vietnamese and English modes after the latest locale edits, including visual verification
+- [x] Add authenticated Telegram settings for potential and risk thresholds
+- [x] Add fixed daily time-slot selection with timezone-aware UTC cron conversion
+- [x] Add durable schedule task UID and last-delivery/idempotency metadata
+- [x] Add `/api/scheduled/*` Heartbeat callback with cron authentication and safe orphan handling
+- [x] Add automatic Telegram delivery audit and tests for idempotency, permissions, and schedule guards
+- [x] Document that the site must be deployed before enabling a Heartbeat schedule
+- [x] Add user-selectable timezone support in Settings and convert local slots into a 6-field UTC Heartbeat cron
+- [x] Add Vitest coverage for scheduled Telegram callback idempotency, unauthorized/non-cron access, orphan, and disabled handling
+- [x] Expose delivery-audit metadata such as lastDeliveredAt and lastDeliveredFingerprint in Settings
+- [x] Add mocked endpoint tests for scheduledTelegramAlerts covering non-cron 403, orphan, disabled, duplicate, and successful send paths

@@ -27,6 +27,10 @@ pnpm test
 pnpm build
 ```
 
+## Telegram alert scheduling
+
+The Settings page (`/settings`) lets an authenticated user choose potential and high-risk thresholds and select fixed UTC delivery slots: 09:00, 13:00, 18:00, or 21:00. Saving an enabled schedule creates or updates one Heartbeat job at `/api/scheduled/telegramAlerts`. The callback authenticates the cron task by `taskUid`, skips orphaned or disabled schedules, and suppresses duplicate fingerprints. **Deploy the project to production before enabling a schedule**, because sandbox preview URLs are not reachable by the scheduler. Telegram delivery remains research-only and never executes trades.
+
 ## Environment variables
 
 Copy `.env.template` to a local environment file only for local development. Never commit `.env` or production credentials. The Manus project supplies database, auth, and server runtime variables through its managed environment. `DEXSCREENER_API_BASE_URL` is optional and defaults to the public API base URL.
@@ -62,7 +66,7 @@ Import the GitHub repository into Vercel, keep the project root at the repositor
 
 Do not paste secrets into GitHub. For a database-backed production environment, configure `DATABASE_URL` and auth variables in the deployment environment rather than committing them.
 
-The current watchlist and alert threshold are browser-local, which makes the first deployment immediately usable without a migration. Authenticated/server-backed preferences and a durable notification worker remain follow-up work. The current alert is an in-app notice evaluated when the dashboard refreshes; it is not an email, Telegram, push, or background notification.
+The browser watchlist remains available locally, while authenticated alert preferences and scheduled Telegram delivery are stored server-side. The Settings page requires login to create or change a schedule. The first scheduled callback only becomes reachable after production deployment and must be enabled from Settings; it is not a trading or execution worker.
 
 The public data integration is server-side so that API calls and future rate-limit controls remain outside the browser. The default Autoscale deployment is appropriate for request-driven dashboard refreshes. High-frequency polling or always-on notification delivery should use a managed background/heartbeat configuration rather than a browser tab.
 

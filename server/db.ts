@@ -110,13 +110,26 @@ export async function removeWatchlistEntry(userId: number, tokenId: string) {
 
 export async function getAlertPreferences(userId: number) {
   const db = await getDb();
-  if (!db) return { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1 };
+  if (!db) return { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1, scheduleEnabled: 0, scheduleCronTaskUid: null, scheduleCron: null, timezone: "UTC", lastDeliveredFingerprint: null, lastDeliveredAt: null };
   const rows = await db.select().from(alertPreferences).where(eq(alertPreferences.userId, userId)).limit(1);
-  return rows[0] ?? { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1 };
+  return rows[0] ?? { potentialThreshold: 70, highRiskThreshold: 75, enabled: 1, scheduleEnabled: 0, scheduleCronTaskUid: null, scheduleCron: null, timezone: "UTC", lastDeliveredFingerprint: null, lastDeliveredAt: null };
 }
 
-export async function saveAlertPreferences(userId: number, values: { potentialThreshold: number; highRiskThreshold: number; enabled: number }) {
+export async function getAlertPreferencesByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(alertPreferences).where(eq(alertPreferences.scheduleCronTaskUid, taskUid)).limit(1);
+  return rows[0];
+}
+
+export async function saveAlertPreferences(userId: number, values: { potentialThreshold: number; highRiskThreshold: number; enabled: number; scheduleEnabled?: number; scheduleCronTaskUid?: string | null; scheduleCron?: string | null; timezone?: string; lastDeliveredFingerprint?: string | null; lastDeliveredAt?: Date | null }) {
   const db = await getDb();
   if (!db) return;
   await db.insert(alertPreferences).values({ userId, ...values }).onDuplicateKeyUpdate({ set: values });
+}
+
+export async function recordAlertDelivery(userId: number, fingerprint: string, deliveredAt = new Date()) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(alertPreferences).set({ lastDeliveredFingerprint: fingerprint, lastDeliveredAt: deliveredAt }).where(eq(alertPreferences.userId, userId));
 }

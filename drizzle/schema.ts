@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, uniqueIndex } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, uniqueIndex, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -39,8 +39,14 @@ export const alertPreferences = mysqlTable("alert_preferences", {
   potentialThreshold: int("potentialThreshold").default(70).notNull(),
   highRiskThreshold: int("highRiskThreshold").default(75).notNull(),
   enabled: int("enabled").default(1).notNull(),
+  scheduleEnabled: int("scheduleEnabled").default(0).notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  scheduleCron: varchar("scheduleCron", { length: 32 }),
+  timezone: varchar("timezone", { length: 64 }).default("UTC").notNull(),
+  lastDeliveredFingerprint: varchar("lastDeliveredFingerprint", { length: 255 }),
+  lastDeliveredAt: timestamp("lastDeliveredAt"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, table => ({ taskUidIndex: index("alert_preferences_task_uid_idx").on(table.scheduleCronTaskUid) }));
 
 export type WatchlistEntry = typeof watchlistEntries.$inferSelect;
 export type AlertPreference = typeof alertPreferences.$inferSelect;
