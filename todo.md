@@ -60,3 +60,6 @@
 - [x] Add Vitest coverage for scheduled Telegram callback idempotency, unauthorized/non-cron access, orphan, and disabled handling
 - [x] Expose delivery-audit metadata such as lastDeliveredAt and lastDeliveredFingerprint in Settings
 - [x] Add mocked endpoint tests for scheduledTelegramAlerts covering non-cron 403, orphan, disabled, duplicate, and successful send paths
+- [x] Verify the Manus-managed database contains the latest alert_preferences scheduling columns
+- [ ] Verify Vercel production build and environment handoff for the Manus project
+- [ ] Save a redeploy-ready checkpoint and provide exact Vercel redeploy steps
