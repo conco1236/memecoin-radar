@@ -18,7 +18,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Bảng Danh sách theo dõi
+ * Bảng Danh sách theo dõi (Watchlist)
  */
 export const watchlistEntries = mysqlTable("watchlist_entries", {
   id: int("id").autoincrement().primaryKey(),
@@ -29,7 +29,7 @@ export const watchlistEntries = mysqlTable("watchlist_entries", {
 }, table => ({ userTokenUnique: uniqueIndex("watchlist_user_token_unique").on(table.userId, table.tokenId) }));
 
 /**
- * Bảng cấu hình Cảnh báo
+ * Bảng cấu hình Cảnh báo (Alert Preferences)
  */
 export const alertPreferences = mysqlTable("alert_preferences", {
   id: int("id").autoincrement().primaryKey(),
@@ -50,7 +50,7 @@ export type WatchlistEntry = typeof watchlistEntries.$inferSelect;
 export type AlertPreference = typeof alertPreferences.$inferSelect;
 
 /**
- * Bảng Sức khỏe nguồn dữ liệu
+ * Bảng Sức khỏe nguồn dữ liệu (Source Health)
  */
 export const sourceHealth = mysqlTable("source_health", {
   id: int("id").autoincrement().primaryKey(),
