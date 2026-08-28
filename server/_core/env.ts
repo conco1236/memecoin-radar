@@ -1,16 +1,13 @@
-export const ENV = {
-  appId: process.env.VITE_APP_ID ?? "",
-  cookieSecret: process.env.JWT_SECRET ?? "",
-  databaseUrl: process.env.DATABASE_URL ?? "",
-  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
-  ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
-  isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+export const env = {
+  DATABASE_URL: process.env.DATABASE_URL!,
+  JWT_SECRET: process.env.JWT_SECRET || "radar-fallback-secret-key-change-me",
   
-  // ====================================================
-  // BỔ SUNG: Cấu hình kết nối trực tiếp API Telegram cá nhân
-  // ====================================================
-  telegramBotToken: process.env.TELEGRAM_BOT_TOKEN ?? "",
-  telegramChatId: process.env.TELEGRAM_CHAT_ID ?? "",
+  // Cấu hình kết nối trực tiếp đến OpenAI 
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
+  OPENAI_MODEL: process.env.OPENAI_MODEL || "gpt-4o-mini",
+
+  // Hệ thống kết nối và thông báo qua Bot Telegram của bạn
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+  TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
+  TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
 };
