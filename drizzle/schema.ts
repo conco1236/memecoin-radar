@@ -69,5 +69,16 @@ export const sourceHealth = mysqlTable("source_health", {
 });
 
 export type SourceHealth = typeof sourceHealth.$inferSelect;
+import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+
+// ====================================================
+// BỔ SUNG: Bảng lưu trữ tài khoản đăng ký bằng Email
+// ====================================================
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 // TODO: Add your tables here
