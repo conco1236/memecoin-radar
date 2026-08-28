@@ -81,7 +81,7 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // ====================================================
-// 3. BỔ SUNG: API LẤY THÔNG TIN PHIÊN ĐĂNG NHẬP HIỆN TẠI (GET ME)
+// 3. API LẤY THÔNG TIN PHIÊN ĐĂNG NHẬP HIỆN TẠI (GET ME)
 // ====================================================
 app.get("/api/auth/me", (req, res) => {
   try {
