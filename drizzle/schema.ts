@@ -1,21 +1,13 @@
 import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, uniqueIndex, index } from "drizzle-orm/mysql-core";
 
 /**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
+ * Bảng quản lý người dùng - Đã loại bỏ Manus OAuth, chuyển sang Email/Mật khẩu truyền thống.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(), // Lưu mật khẩu băm bảo mật
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -25,6 +17,9 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+/**
+ * Bảng Danh sách theo dõi
+ */
 export const watchlistEntries = mysqlTable("watchlist_entries", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
@@ -33,6 +28,9 @@ export const watchlistEntries = mysqlTable("watchlist_entries", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, table => ({ userTokenUnique: uniqueIndex("watchlist_user_token_unique").on(table.userId, table.tokenId) }));
 
+/**
+ * Bảng cấu hình Cảnh báo
+ */
 export const alertPreferences = mysqlTable("alert_preferences", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().unique(),
@@ -51,6 +49,9 @@ export const alertPreferences = mysqlTable("alert_preferences", {
 export type WatchlistEntry = typeof watchlistEntries.$inferSelect;
 export type AlertPreference = typeof alertPreferences.$inferSelect;
 
+/**
+ * Bảng Sức khỏe nguồn dữ liệu
+ */
 export const sourceHealth = mysqlTable("source_health", {
   id: int("id").autoincrement().primaryKey(),
   source: varchar("source", { length: 32 }).notNull().unique(),
@@ -69,16 +70,3 @@ export const sourceHealth = mysqlTable("source_health", {
 });
 
 export type SourceHealth = typeof sourceHealth.$inferSelect;
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
-
-// ====================================================
-// BỔ SUNG: Bảng lưu trữ tài khoản đăng ký bằng Email
-// ====================================================
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// TODO: Add your tables here
