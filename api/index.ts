@@ -1,12 +1,12 @@
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { appRouter } from "../server/routers.js";
-import { createContext } from "../server/_core/context.js";
+import { appRouter } from "../server/routers";
+import { createContext } from "../server/_core/context";
 
-import { db } from "../server/db.js";
-import { users } from "../drizzle/schema.js";
+import { db } from "../server/db";
+import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
-import { ENV } from "../server/_core/env.js";
+import { ENV } from "../server/_core/env";
 import crypto from "crypto";
 
 const app = express();
