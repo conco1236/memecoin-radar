@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  root: "client", // Chỉ định Vite tìm index.html bên trong thư mục client
+  root: "client",
   plugins: [react()],
   resolve: {
     alias: {
@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../dist/public", // Xuất kết quả build ra ngoài root theo đúng cấu hình của Vercel
+    outDir: "../dist/public",
     emptyOutDir: true,
   },
   server: {
