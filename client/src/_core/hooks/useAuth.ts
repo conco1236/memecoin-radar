@@ -7,16 +7,18 @@ type UseAuthOptions = {
 
 export interface UserInfo {
   email: string;
+  id?: string;
+  name?: string;
 }
 
 export function useAuth(options?: UseAuthOptions) {
   const { redirectOnUnauthenticated = false, redirectPath } = options ?? {};
-  
+
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // Hàm tải/kiểm tra thông tin phiên làm việc từ API Express mới
+  // Lấy thông tin người dùng từ API xác thực chuẩn
   const fetchMe = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -26,49 +28,50 @@ export function useAuth(options?: UseAuthOptions) {
         const data = await res.json();
         if (data && data.user) {
           setUser(data.user);
-          localStorage.setItem("manus-runtime-user-info", JSON.stringify(data.user));
+          localStorage.setItem("user_info", JSON.stringify(data.user));
           return;
         }
       }
       setUser(null);
-      localStorage.removeItem("manus-runtime-user-info");
-    } catch (err: any) {
+      localStorage.removeItem("user_info");
+    } catch (err: unknown) {
       setError(err instanceof Error ? err : new Error(String(err)));
       setUser(null);
-    } // SỬA LỖI CHÍNH TẢ: Đã sửa từ 'finaly' thành 'finally' chuẩn hệ thống
-    finally {
+    } finally {
       setLoading(false);
     }
   }, []);
 
-  // Gọi kiểm tra phiên làm việc ngay khi Hook khởi tạo trên giao diện
   useEffect(() => {
     fetchMe();
   }, [fetchMe]);
 
-  // Hàm Đăng xuất (Logout) xóa sạch dữ liệu phiên và cookie tại trình duyệt
+  // Xử lý đăng xuất phiên làm việc
   const logout = useCallback(async () => {
     setLoading(true);
     try {
-      // Ghi đè cookie bằng giá trị rỗng và đặt thời gian hết hạn ngay lập tức
-      document.cookie = "user_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
-      
-      // Xóa bộ nhớ cache cục bộ của trình duyệt
+      // Gọi API đăng xuất nếu có
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+
+      // Xóa cookie phiên
+      document.cookie =
+        "user_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
+
+      // Xóa thông tin lưu trữ tại trình duyệt
       try {
-        sessionStorage.removeItem("manus-cookie");
-        localStorage.removeItem("manus-runtime-user-info");
+        localStorage.removeItem("user_info");
+        sessionStorage.clear();
       } catch {}
-      
+
       setUser(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err : new Error(String(err)));
-    } // SỬA LỖI CHÍNH TẢ: Đã sửa từ 'finaly' thành 'finally' chuẩn hệ thống
-    finally {
+    } finally {
       setLoading(false);
     }
   }, []);
 
-  // Xử lý chuyển hướng trang tự động nếu chưa xác thực (Unauthenticated)
+  // Xử lý chuyển hướng nếu chưa đăng nhập
   useEffect(() => {
     if (!redirectOnUnauthenticated) return;
     if (loading) return;
@@ -79,7 +82,6 @@ export function useAuth(options?: UseAuthOptions) {
     if (redirectPath) {
       window.location.href = redirectPath;
     }
-    // Đã loại bỏ hoàn toàn lệnh gọi startLogin() của Manus cũ để tránh loop chuyển hướng lỗi
   }, [redirectOnUnauthenticated, redirectPath, loading, user]);
 
   return {
