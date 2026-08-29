@@ -2,20 +2,17 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-// Cấu hình Vite chuẩn hóa quốc tế cho các ứng dụng React + TypeScript Fullstack
 export default defineConfig({
-  plugins: [
-    react()
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./client/src"),
+      "@": path.resolve(__dirname, "./src"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
   build: {
-    outDir: "dist",
-    emptyOutDir: false, // Giữ lại các thành phần server biên dịch song song nếu có
+    outDir: "dist/public",
+    emptyOutDir: true,
   },
   server: {
     port: 5173,
