@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "pnpm db:migrate && vite build",
+    "build": "npm run db:migrate && vite build",
     "preview": "vite preview",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
