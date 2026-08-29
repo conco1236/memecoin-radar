@@ -1,21 +1,33 @@
 import { env } from "./env";
 
-export async function generateLLMResponse(prompt: string, systemInstruction?: string) {
-  if (!env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY chưa được cấu hình trên Vercel.");
+export async function generateLLMResponse(
+  prompt: string,
+  systemInstruction?: string
+) {
+  const apiKey = env.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      "OPENAI_API_KEY chưa được cấu hình. Vui lòng thêm biến môi trường trên Vercel."
+    );
   }
 
+  // Sử dụng mô hình được cấu hình hoặc mặc định mô hình rẻ/tiết kiệm gpt-4o-mini
+  const model = env.OPENAI_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini";
+
   try {
-    const response = await fetch("https://openai.com", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: env.OPENAI_MODEL,
+        model,
         messages: [
-          ...(systemInstruction ? [{ role: "system", content: systemInstruction }] : []),
+          ...(systemInstruction
+            ? [{ role: "system", content: systemInstruction }]
+            : []),
           { role: "user", content: prompt },
         ],
         temperature: 0.2,
@@ -24,8 +36,12 @@ export async function generateLLMResponse(prompt: string, systemInstruction?: st
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("[OpenAI Error]:", errorData);
-      throw new Error(`OpenAI trả về lỗi: ${response.status}`);
+      console.error("[OpenAI Error Details]:", errorData);
+      throw new Error(
+        `OpenAI trả về lỗi (${response.status}): ${
+          errorData.error?.message || response.statusText
+        }`
+      );
     }
 
     const data = await response.json();
