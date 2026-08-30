@@ -1,7 +1,7 @@
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { appRouter } from "../../server/routers.js";
-import { createContext } from "../../server/_core/context.js";
+import { appRouter } from "../../server/routers";
+import { createContext } from "../../server/_core/context";
 
 export function normalizeTrpcPath(url: string): string {
   return url.startsWith("/api/trpc") ? url.slice("/api/trpc".length) || "/" : url;
