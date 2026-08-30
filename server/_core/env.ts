@@ -11,3 +11,6 @@ export const env = {
   TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
   TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
 };
+
+// Backwards-compatible alias: some files import { ENV } from './env.js'
+export const ENV = env;
