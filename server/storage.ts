@@ -1,12 +1,9 @@
-// Preconfigured storage helpers for Manus WebDev templates
-// Uploads via Forge Server presigned URL to S3 (PUT direct).
-// Downloads return /manus-storage/{key} paths served via 307 redirect.
-
+import crypto from "crypto";
 import { ENV } from "./_core/env.js";
 
 function getForgeConfig() {
-  const forgeUrl = ENV.forgeApiUrl;
-  const forgeKey = ENV.forgeApiKey;
+  const forgeUrl = (ENV as any).forgeApiUrl;
+  const forgeKey = (ENV as any).forgeApiKey;
 
   if (!forgeUrl || !forgeKey) {
     throw new Error(
@@ -14,7 +11,7 @@ function getForgeConfig() {
     );
   }
 
-  return { forgeUrl: forgeUrl.replace(/\/+$/, ""), forgeKey };
+  return { forgeUrl: forgeUrl.replace(/\/+$, ""), forgeKey };
 }
 
 function normalizeKey(relKey: string): string {
